@@ -17,13 +17,13 @@ func GetDBConnection() *gorm.DB {
 }
 
 func connectDB() *gorm.DB {
-	db, err := gorm.Open(sqlite.Open("test.database"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("data.db"), &gorm.Config{})
 
 	if err != nil {
 		panic("failed to connect database")
 	}
 
-	db.AutoMigrate(&models.Order{})
+	_ = db.AutoMigrate(&models.Order{})
 
 	dbConnection = db
 
