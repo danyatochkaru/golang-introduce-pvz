@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"pvz/database"
 	"pvz/models"
-	"pvz/utils"
 )
 
 var db = database.GetDBConnection()
@@ -21,16 +20,19 @@ func GetAllOrders(c echo.Context) error {
 func GetOrderById(c echo.Context) error {
 	var order models.Order
 
-	db.Last(&order, c.Param("id"))
+	db.Take(&order, c.Param("id"))
+
+	if order.ID == 0 {
+		return c.NoContent(http.StatusNotFound)
+	}
 
 	return c.JSON(http.StatusOK, order)
 }
 
 func CreateOrder(c echo.Context) error {
 	fullName := c.FormValue("fullName")
-	id := utils.StringToUint(c.FormValue("id"))
 
-	order := models.Order{FullName: fullName, ID: id}
+	order := models.Order{FullName: fullName}
 
 	db.Create(&order)
 
@@ -40,7 +42,7 @@ func CreateOrder(c echo.Context) error {
 func UpdateOrder(c echo.Context) error {
 	var order models.Order
 
-	db.First(&order, c.Param("id"))
+	db.Take(&order, c.Param("id"))
 
 	if order.ID == 0 {
 		return c.NoContent(http.StatusNotFound)
@@ -56,7 +58,7 @@ func UpdateOrder(c echo.Context) error {
 func DeleteOrder(c echo.Context) error {
 	var order models.Order
 
-	db.First(&order, c.Param("id"))
+	db.Take(&order, c.Param("id"))
 
 	if order.ID == 0 {
 		return c.NoContent(http.StatusNotFound)
