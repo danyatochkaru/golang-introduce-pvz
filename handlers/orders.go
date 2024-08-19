@@ -3,11 +3,8 @@ package handlers
 import (
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"pvz/database"
 	"pvz/models"
 )
-
-var db = database.GetDBConnection()
 
 func GetAllOrders(c echo.Context) error {
 	var orders []models.Order

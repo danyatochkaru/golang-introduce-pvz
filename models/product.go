@@ -2,7 +2,8 @@ package models
 
 import "gorm.io/gorm"
 
-type Order struct {
+type Product struct {
 	gorm.Model
-	FullName string
+	Title string
+	Price uint
 }
