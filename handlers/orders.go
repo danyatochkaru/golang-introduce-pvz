@@ -17,7 +17,7 @@ func GetAllOrders(c echo.Context) error {
 func GetOrderById(c echo.Context) error {
 	var order models.Order
 
-	db.Take(&order, c.Param("id"))
+	db.Preload("Status").Take(&order, c.Param("id"))
 
 	if order.ID == 0 {
 		return c.NoContent(http.StatusNotFound)
@@ -64,4 +64,27 @@ func DeleteOrder(c echo.Context) error {
 	db.Delete(&order)
 
 	return c.NoContent(http.StatusOK)
+}
+
+func SetOrderStatus(c echo.Context) error {
+	var (
+		order  models.Order
+		status models.Status
+	)
+
+	db.Take(&order, c.Param("id"))
+	db.Take(&status, c.FormValue("statusId"))
+
+	if order.ID == 0 {
+		return c.String(http.StatusNotFound, "Order not found")
+	}
+	if status.ID == 0 {
+		return c.String(http.StatusBadRequest, "Status not found")
+	}
+
+	order.Status = status
+
+	db.Save(&order)
+
+	return c.JSON(http.StatusOK, order)
 }

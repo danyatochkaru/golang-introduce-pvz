@@ -33,7 +33,7 @@ func CreateStatus(c echo.Context) error {
 
 	db.Create(&status)
 
-	return c.String(http.StatusCreated, "Order created")
+	return c.String(http.StatusCreated, "Status created")
 }
 
 func UpdateStatus(c echo.Context) error {

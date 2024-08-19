@@ -14,6 +14,8 @@ func main() {
 	e.PUT("/orders/:id", handlers.UpdateOrder)
 	e.DELETE("/orders/:id", handlers.DeleteOrder)
 
+	e.PUT("/orders/:id/status", handlers.SetOrderStatus)
+
 	e.GET("/products", handlers.GetAllProducts)
 	e.GET("/products/:id", handlers.GetProductById)
 	e.POST("/products", handlers.CreateProduct)
