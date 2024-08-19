@@ -27,32 +27,29 @@ func GetStatusById(c echo.Context) error {
 }
 
 func CreateStatus(c echo.Context) error {
-	var statusValue models.StatusValue
-	statusValue = models.StatusValue(c.FormValue("fullName"))
-
-	order := models.Status{
-		Value: statusValue,
+	status := models.Status{
+		Value: c.FormValue("statusValue"),
 	}
 
-	db.Create(&order)
+	db.Create(&status)
 
 	return c.String(http.StatusCreated, "Order created")
 }
 
 func UpdateStatus(c echo.Context) error {
-	var order models.Status
+	var status models.Status
 
-	db.Take(&order, c.Param("id"))
+	db.Take(&status, c.Param("id"))
 
-	if order.ID == 0 {
+	if status.ID == 0 {
 		return c.NoContent(http.StatusNotFound)
 	}
 
-	order.Value = models.StatusValue(c.FormValue("value"))
+	status.Value = c.FormValue("value")
 
-	db.Save(&order)
+	db.Save(&status)
 
-	return c.JSON(http.StatusOK, order)
+	return c.JSON(http.StatusOK, status)
 }
 
 func DeleteStatus(c echo.Context) error {

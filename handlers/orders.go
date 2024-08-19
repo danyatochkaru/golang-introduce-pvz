@@ -27,9 +27,9 @@ func GetOrderById(c echo.Context) error {
 }
 
 func CreateOrder(c echo.Context) error {
-	fullName := c.FormValue("fullName")
-
-	order := models.Order{FullName: fullName}
+	order := models.Order{
+		FullName: c.FormValue("fullName"),
+	}
 
 	db.Create(&order)
 

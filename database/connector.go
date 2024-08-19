@@ -3,6 +3,7 @@ package database
 import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"pvz/models"
 )
 
@@ -17,7 +18,9 @@ func GetDBConnection() *gorm.DB {
 }
 
 func connectDB() *gorm.DB {
-	db, err := gorm.Open(sqlite.Open("data.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("data.db"), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 
 	if err != nil {
 		panic("failed to connect database")
