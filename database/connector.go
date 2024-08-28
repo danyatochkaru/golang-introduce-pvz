@@ -30,6 +30,8 @@ func connectDB() *gorm.DB {
 		&models.Order{},
 		&models.Product{},
 		&models.Status{},
+		&models.Cart{},
+		&models.CartProducts{},
 	)
 
 	dbConnection = db

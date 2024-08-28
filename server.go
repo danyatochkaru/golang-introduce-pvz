@@ -28,5 +28,14 @@ func main() {
 	e.PUT("/statuses/:id", handlers.UpdateStatus)
 	e.DELETE("/statuses/:id", handlers.DeleteStatus)
 
+	e.GET("/carts", handlers.GetAllCarts)
+	e.GET("/carts/:id", handlers.GetCartById)
+	e.POST("/carts", handlers.CreateCart)
+	e.DELETE("/carts/:id", handlers.DeleteCart)
+
+	e.GET("/carts/:cart_id/products", handlers.GetProductInCart)
+	e.POST("/carts/:cart_id/products/:product_id", handlers.AddProductToCart)
+	e.DELETE("/carts/:cart_id/products/:product_id", handlers.RemoveProductFromCart)
+
 	e.Logger.Fatal(e.Start(":1323"))
 }

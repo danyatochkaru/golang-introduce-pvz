@@ -17,7 +17,7 @@ func GetAllOrders(c echo.Context) error {
 func GetOrderById(c echo.Context) error {
 	var order models.Order
 
-	db.Preload("Status").Take(&order, c.Param("id"))
+	db.Preload("Status").Preload("Products").Take(&order, c.Param("id"))
 
 	if order.ID == 0 {
 		return c.NoContent(http.StatusNotFound)
@@ -83,6 +83,29 @@ func SetOrderStatus(c echo.Context) error {
 	}
 
 	order.Status = status
+
+	db.Save(&order)
+
+	return c.JSON(http.StatusOK, order)
+}
+
+func AddProductToOrder(c echo.Context) error {
+	var (
+		order   models.Order
+		product models.Product
+	)
+
+	db.Take(&order, c.Param("id"))
+	db.Take(&product, c.FormValue("productId"))
+
+	if order.ID == 0 {
+		return c.String(http.StatusNotFound, "Order not found")
+	}
+	if product.ID == 0 {
+		return c.String(http.StatusBadRequest, "Product not found")
+	}
+
+	order.Products = append(order.Products, &product)
 
 	db.Save(&order)
 
