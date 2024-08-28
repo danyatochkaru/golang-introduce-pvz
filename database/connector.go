@@ -27,12 +27,13 @@ func connectDB() *gorm.DB {
 	}
 
 	_ = db.AutoMigrate(
-		&models.Order{},
-		&models.Product{},
-		&models.Status{},
-		&models.Cart{},
-		&models.CartProducts{},
+		new(models.Order),
+		new(models.Product),
+		new(models.Status),
+		new(models.Cart),
+		new(models.CartProducts),
 	)
+	_ = db.SetupJoinTable(new(models.Cart), "Products", new(models.CartProducts))
 
 	dbConnection = db
 

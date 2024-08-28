@@ -49,10 +49,14 @@ func DeleteCart(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func GetProductInCart(c echo.Context) error {
+func GetProductsInCart(c echo.Context) error {
 	var cart models.Cart
 
-	db.Preload("Products").Find(&cart)
+	db.Preload("Products").Where("id = ?", c.Param("cart_id")).Find(&cart)
+
+	if cart.ID == 0 {
+		return c.String(http.StatusNotFound, "Cart not found")
+	}
 
 	return c.JSON(http.StatusOK, &cart.Products)
 }
@@ -60,7 +64,7 @@ func GetProductInCart(c echo.Context) error {
 func AddProductToCart(c echo.Context) error {
 	var cartProducts models.CartProducts
 
-	db.Preload("Product").Preload("Order").Where(&models.CartProducts{
+	db.Where(&models.CartProducts{
 		CartID:    utils.StringToUint(c.Param("cart_id")),
 		ProductID: utils.StringToUint(c.Param("product_id")),
 	}).Take(&cartProducts)
@@ -73,9 +77,9 @@ func AddProductToCart(c echo.Context) error {
 	cartProducts.ProductID = utils.StringToUint(c.Param("product_id"))
 	db.Create(&cartProducts)
 
-	var cart models.Cart
+	var cart []models.Cart
 
-	db.Preload("Product").Preload("Order").Find(&cart)
+	db.Preload("Products").Find(&cart)
 
 	return c.JSON(http.StatusCreated, &cart)
 }
@@ -83,7 +87,7 @@ func AddProductToCart(c echo.Context) error {
 func RemoveProductFromCart(c echo.Context) error {
 	var cartProducts models.CartProducts
 
-	db.Preload("Product").Preload("Order").Where(&models.CartProducts{
+	db.Preload("Product").Preload("Cart").Where(&models.CartProducts{
 		CartID:    utils.StringToUint(c.Param("cart_id")),
 		ProductID: utils.StringToUint(c.Param("product_id")),
 	}).Take(&cartProducts)
@@ -96,7 +100,32 @@ func RemoveProductFromCart(c echo.Context) error {
 
 	var cart models.Cart
 
-	db.Preload("Product").Preload("Order").Find(&cart)
+	db.Preload("Products").Find(&cart)
 
 	return c.JSON(http.StatusOK, &cart)
+}
+
+func ClearProductFromCart(c echo.Context) error {
+	var cartProducts models.CartProducts
+
+	db.Where(&models.CartProducts{CartID: utils.StringToUint(c.Param("cart_id"))}).Delete(&cartProducts)
+
+	return c.String(http.StatusOK, "Cart cleared")
+}
+
+func ChangeProductAmount(c echo.Context) error {
+	var cartProducts models.CartProducts
+
+	db.Where(&models.CartProducts{
+		CartID:    utils.StringToUint(c.Param("cart_id")),
+		ProductID: utils.StringToUint(c.Param("product_id")),
+	}).Take(&cartProducts)
+
+	if cartProducts.ID == 0 {
+		return c.String(http.StatusConflict, "Product not in cart")
+	}
+
+	db.Model(&cartProducts).Update("Amount", utils.StringToUint(c.FormValue("amount")))
+
+	return c.JSON(http.StatusOK, &cartProducts)
 }

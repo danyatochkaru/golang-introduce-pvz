@@ -33,8 +33,10 @@ func main() {
 	e.POST("/carts", handlers.CreateCart)
 	e.DELETE("/carts/:id", handlers.DeleteCart)
 
-	e.GET("/carts/:cart_id/products", handlers.GetProductInCart)
+	e.GET("/carts/:cart_id/products", handlers.GetProductsInCart)
+	e.DELETE("/carts/:cart_id/products", handlers.ClearProductFromCart)
 	e.POST("/carts/:cart_id/products/:product_id", handlers.AddProductToCart)
+	e.PUT("/carts/:cart_id/products/:product_id", handlers.ChangeProductAmount)
 	e.DELETE("/carts/:cart_id/products/:product_id", handlers.RemoveProductFromCart)
 
 	e.Logger.Fatal(e.Start(":1323"))
